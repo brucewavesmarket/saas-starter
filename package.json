@@ -1,14 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently \"next dev --turbopack\" \"stripe listen --forward-to localhost:3000/api/stripe/webhook\" --names \"nextjs,stripe\" --prefix-colors \"blue,green\"",
+    "dev:next": "next dev --turbopack",
+    "dev:stripe": "stripe listen --forward-to localhost:3000/api/stripe/webhook",
     "build": "next build",
     "start": "next start",
-    "db:setup": "npx tsx lib/db/setup.ts",
-    "db:seed": "npx tsx lib/db/seed.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "setup": "npx tsx lib/setup/supabase.ts",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "db:studio": "supabase studio",
+    "db:types": "supabase gen types typescript --local > lib/supabase/types.ts"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.9",
@@ -16,6 +18,8 @@
     "@radix-ui/react-label": "^2.1.6",
     "@radix-ui/react-radio-group": "^1.3.6",
     "@radix-ui/react-slot": "^1.2.2",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.8",
     "@tailwindcss/postcss": "4.1.7",
     "@types/node": "^22.15.18",
     "@types/react": "19.1.4",
@@ -42,5 +46,9 @@
     "tw-animate-css": "^1.3.0",
     "typescript": "^5.8.3",
     "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "supabase": "^2.23.4"
   }
 }

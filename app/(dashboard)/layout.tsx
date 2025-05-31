@@ -13,8 +13,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { signOut } from '@/app/(login)/actions';
 import { useRouter } from 'next/navigation';
-import { User } from '@/lib/db/schema';
+import type { Database } from '@/lib/supabase/types';
 import useSWR from 'swr';
+
+type User = Database['public']['Tables']['users']['Row'];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -51,10 +53,9 @@ function UserMenu() {
         <Avatar className="cursor-pointer size-9">
           <AvatarImage alt={user.name || ''} />
           <AvatarFallback>
-            {user.email
-              .split(' ')
-              .map((n) => n[0])
-              .join('')}
+            {user.name
+              ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase()
+              : user.id.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

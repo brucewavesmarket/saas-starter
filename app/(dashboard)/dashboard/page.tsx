@@ -11,8 +11,26 @@ import {
 } from '@/components/ui/card';
 import { customerPortalAction } from '@/lib/payments/actions';
 import { useActionState } from 'react';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
+import type { Database } from '@/lib/supabase/types';
 import { removeTeamMember, inviteTeamMember } from '@/app/(login)/actions';
+
+type User = Database['public']['Tables']['users']['Row'];
+type TeamDataWithMembers = {
+  id: number;
+  name: string;
+  planName: string | null;
+  subscriptionStatus: string | null;
+  teamMembers: Array<{
+    id: number;
+    role: string;
+    joinedAt: string;
+    user: {
+      id: string;
+      name: string | null;
+      email: string | null;
+    };
+  }>;
+};
 import useSWR from 'swr';
 import { Suspense } from 'react';
 import { Input } from '@/components/ui/input';
@@ -100,8 +118,8 @@ function TeamMembers() {
     FormData
   >(removeTeamMember, {});
 
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
-    return user.name || user.email || 'Unknown User';
+  const getUserDisplayName = (user: { id: string; name: string | null; email: string | null }) => {
+    return user.name || user.email || `User ${user.id.slice(0, 8)}`;
   };
 
   if (!teamData?.teamMembers?.length) {

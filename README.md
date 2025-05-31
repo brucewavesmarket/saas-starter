@@ -19,8 +19,8 @@ This is a starter template for building a SaaS application using **Next.js** wit
 ## Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/)
-- **Database**: [Postgres](https://www.postgresql.org/)
-- **ORM**: [Drizzle](https://orm.drizzle.team/)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL + Auth + Real-time)
+- **Authentication**: [Supabase Auth](https://supabase.com/auth)
 - **Payments**: [Stripe](https://stripe.com/)
 - **UI Library**: [shadcn/ui](https://ui.shadcn.com/)
 
@@ -34,45 +34,41 @@ pnpm install
 
 ## Running Locally
 
-[Install](https://docs.stripe.com/stripe-cli) and log in to your Stripe account:
+First, set up your development environment:
 
-```bash
-stripe login
-```
+1. **Install and authenticate with Stripe CLI:**
+   ```bash
+   stripe login
+   ```
 
-Use the included setup script to create your `.env` file:
+2. **Run the setup script to configure Supabase and Stripe:**
+   ```bash
+   pnpm setup
+   ```
+   This will guide you through:
+   - Connecting to your Supabase project
+   - Setting up environment variables
+   - Configuring Stripe webhooks
+   - Running database migrations
 
-```bash
-pnpm db:setup
-```
+3. **Create your first user:**
+   You can create new users through the `/sign-up` route once the app is running.
 
-Run the database migrations and seed the database with a default user and team:
-
-```bash
-pnpm db:migrate
-pnpm db:seed
-```
-
-This will create the following user and team:
-
-- User: `test@test.com`
-- Password: `admin123`
-
-You can also create new users through the `/sign-up` route.
-
-Finally, run the Next.js development server:
+Finally, run the development server (this will start both Next.js and Stripe webhook listener):
 
 ```bash
 pnpm dev
 ```
 
+This will concurrently run:
+- **Next.js dev server** on `http://localhost:3000`
+- **Stripe webhook listener** for handling subscription events
+
 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
 
-You can listen for Stripe webhooks locally through their CLI to handle subscription change events:
-
-```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
-```
+### Alternative Commands:
+- `pnpm dev:next` - Run only Next.js (without Stripe webhooks)
+- `pnpm dev:stripe` - Run only Stripe webhook listener
 
 ## Testing Payments
 
@@ -105,8 +101,9 @@ In your Vercel project settings (or during deployment), add all the necessary en
 1. `BASE_URL`: Set this to your production domain.
 2. `STRIPE_SECRET_KEY`: Use your Stripe secret key for the production environment.
 3. `STRIPE_WEBHOOK_SECRET`: Use the webhook secret from the production webhook you created in step 1.
-4. `POSTGRES_URL`: Set this to your production database URL.
-5. `AUTH_SECRET`: Set this to a random string. `openssl rand -base64 32` will generate one.
+4. `NEXT_PUBLIC_SUPABASE_URL`: Set this to your production Supabase project URL.
+5. `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Set this to your production Supabase anon key.
+6. `SUPABASE_SERVICE_ROLE_KEY`: Set this to your production Supabase service role key.
 
 ## Other Templates
 
